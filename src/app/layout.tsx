@@ -7,20 +7,25 @@ import { cn } from "@/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CodeGPT",
-  description: "AI Generated Code Prompts",
+    title: "CodeGenGPT",
+    description: "Your AI coding assistant",
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body className={cn(inter.className, "w-screen h-screen bg-white dark:bg-black text-black dark:text-white")}>
-        {children}
-      </body>
-    </html>
-  );
+    return (
+        <html lang='en'>
+            <body
+                className={cn(
+                    inter.className,
+                    "h-screen bg-white dark:bg-black text-black dark:text-white"
+                )}
+            >
+                {children}
+            </body>
+        </html>
+    );
 }
