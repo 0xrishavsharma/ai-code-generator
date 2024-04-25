@@ -1,3 +1,2 @@
 bunx prettier . --write
 git add .
-bun run build
