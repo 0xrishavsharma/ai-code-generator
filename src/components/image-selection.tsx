@@ -61,6 +61,8 @@ export default function ImageUploadComponent({
             src={preview}
             alt="Selected"
             className="object-cover w-32 h-32"
+            width={128}
+            height={128}
           />
           <button
             onClick={handleRemoveImage}
