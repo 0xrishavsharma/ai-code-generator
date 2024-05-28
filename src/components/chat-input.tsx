@@ -16,14 +16,12 @@ export default function ExpandingInput({
   isStreaming?: boolean
 }) {
   const [content, setContent] = useState("")
-  const [selectedImage, setSelectedImage] = useState<File | undefined>(
-    undefined
-  )
+  const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
 
   const submit = (value: string) => {
-    onSubmit?.(value, selectedImage)
+    onSubmit?.(value, selectedFile)
     setContent("")
-    setSelectedImage(undefined)
+    setSelectedFile(undefined)
   }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,8 +37,8 @@ export default function ExpandingInput({
         className="w-full flex flex-col gap-y-4 px-4 relative max-w-5xl mx-auto"
       >
         <ImageSelection
-          selectedImage={selectedImage}
-          setSelectedImage={setSelectedImage}
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
         />
         <GrowingTextArea
           className="w-full bg-transparent border border-gray-500 rounded-2xl outline-none resize-none pl-12 pr-14 py-4 scrollbar-content overflow-y-auto overflow-x-clip overscroll-contain"
