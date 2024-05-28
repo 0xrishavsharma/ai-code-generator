@@ -2,33 +2,33 @@ import Image from "next/image"
 import React, { useEffect, useState } from "react"
 
 export default function ImageUploadComponent({
-  selectedImage,
-  setSelectedImage,
+  selectedFile,
+  setSelectedFile,
 }: {
-  selectedImage: File | undefined
-  setSelectedImage: (file: File | undefined) => void
+  selectedFile: File | undefined
+  setSelectedFile: (file: File | undefined) => void
 }) {
-  const [preview, setPreview] = useState<string | undefined>(undefined)
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    if (selectedImage) {
-      const objectUrl = URL.createObjectURL(selectedImage)
-      setPreview(objectUrl)
-
-      return () => {
-        URL.revokeObjectURL(objectUrl)
-      }
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
     }
-    setPreview(undefined)
-  }, [selectedImage])
+    if (selectedFile) {
+      const url = URL.createObjectURL(selectedFile)
+      setPreviewUrl(url)
+    }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPreviewUrl(undefined)
+  }, [selectedFile])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    setSelectedImage(file)
+    setSelectedFile(file)
   }
 
   const handleRemoveImage = () => {
-    setSelectedImage(undefined)
+    setSelectedFile(undefined)
   }
 
   return (
@@ -51,26 +51,28 @@ export default function ImageUploadComponent({
           className="bg-transparent flex-1 border-none outline-none hidden"
           name="media"
           type="file"
-          accept="image/jpeg,image/png"
-          onChange={handleImageChange}
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          onChange={handleFileChange}
         />
       </label>
-      {preview && (
+      {previewUrl && (
         <div className="w-full p-2">
-          <Image
-            src={preview}
-            alt="Selected"
-            className="object-cover w-32 h-32"
-            width={128}
-            height={128}
-          />
-          <button
-            onClick={handleRemoveImage}
-            type="button"
-            className="px-4 py-2 text-white bg-red-500 hover:bg-red-700 rounded mt-2"
-          >
-            Remove Image
-          </button>
+          <div className="relative w-max">
+            <Image
+              src={previewUrl}
+              alt="Selected"
+              className="object-cover w-32 h-32"
+              width={128}
+              height={128}
+            />
+            <button
+              onClick={handleRemoveImage}
+              type="button"
+              className="absolute -top-3 -right-3 flex items-center justify-center px-1 py-1 w-7 h-7 rounded-full text-white bg-red-500 hover:bg-red-700"
+            >
+              X
+            </button>
+          </div>
         </div>
       )}
     </div>
