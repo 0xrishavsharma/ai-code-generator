@@ -1,7 +1,7 @@
 import Image from "next/image"
 import React, { useEffect, useState } from "react"
 
-export default function ImageUploadComponent({
+export default function FileUploadComponent({
   selectedFile,
   setSelectedFile,
 }: {
@@ -15,19 +15,25 @@ export default function ImageUploadComponent({
       URL.revokeObjectURL(previewUrl)
     }
     if (selectedFile) {
+      console.log("yeah inside the useEffect")
+      console.log("Selected file inside the useEffect", selectedFile)
       const url = URL.createObjectURL(selectedFile)
       setPreviewUrl(url)
+      console.log("Url inside the useEffect", url)
+      console.log("Preview url inside useEffect", previewUrl)
     }
 
     setPreviewUrl(undefined)
   }, [selectedFile])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Hey hey")
     const file = e.target.files?.[0]
     setSelectedFile(file)
+    console.log("Selected file", selectedFile)
   }
 
-  const handleRemoveImage = () => {
+  const handleRemoveFile = () => {
     setSelectedFile(undefined)
   }
 
@@ -55,9 +61,10 @@ export default function ImageUploadComponent({
           onChange={handleFileChange}
         />
       </label>
+
       {previewUrl && (
         <div className="w-full p-2">
-          <div className="relative w-max">
+          <div className=" w-max">
             <Image
               src={previewUrl}
               alt="Selected"
@@ -66,7 +73,7 @@ export default function ImageUploadComponent({
               height={128}
             />
             <button
-              onClick={handleRemoveImage}
+              onClick={handleRemoveFile}
               type="button"
               className="absolute -top-3 -right-3 flex items-center justify-center px-1 py-1 w-7 h-7 rounded-full text-white bg-red-500 hover:bg-red-700"
             >
