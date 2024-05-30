@@ -1,13 +1,13 @@
 "use client"
 
 import { CounterState } from "./counter/counterSlice"
+import { Provider } from "react-redux"
+import { store } from "./store"
 
 export default function StoreProvider({
-  count,
   children,
 }: {
-  count: CounterState
   children: React.ReactNode
 }) {
-  const
+  return <Provider store={store}>{children}</Provider>
 }

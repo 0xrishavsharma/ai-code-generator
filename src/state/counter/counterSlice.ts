@@ -1,5 +1,5 @@
 "use client"
-import { createSlice } from "@reduxjs/toolkit"
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
 export interface CounterState {
   value: number
@@ -21,10 +21,35 @@ const counterSlice = createSlice({
     decrement: (state) => {
       state.value -= 1
     },
+    incrementByAmount: (state, action: PayloadAction<number>) => {
+      state.value += action.payload
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(incrementAsync.pending, () => {
+      console.log("incrementAsync.pending")
+      console.log(incrementAsync.pending)
+    })
+    builder.addCase(
+      incrementAsync.fulfilled,
+      (state, action: PayloadAction<number>) => {
+        state.value += action.payload
+      }
+    )
   },
 })
 
-// exporting action and reducers
-export const { increment, decrement } = counterSlice.actions
+// asynchronous action
+export const incrementAsync = createAsyncThunk(
+  "counter/incrementAsync",
+  async (amount: number) => {
+    // Imitating an API call
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    return amount
+  }
+)
+
+// exporting synchronous action and reducers
+export const { increment, decrement, incrementByAmount } = counterSlice.actions
 
 export default counterSlice.reducer

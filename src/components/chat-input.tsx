@@ -5,8 +5,13 @@ import GrowingTextArea from "./growing-text-area"
 import { cn } from "@/lib/utils"
 import FileSelection from "./file-selection"
 import { useDispatch, useSelector } from "react-redux"
-import { RootState } from "@/state/store"
-import { decrement, increment } from "@/state/counter/counterSlice"
+import { AppDispatch, RootState } from "@/state/store"
+import {
+  decrement,
+  increment,
+  incrementAsync,
+  incrementByAmount,
+} from "@/state/counter/counterSlice"
 
 export default function ExpandingInput({
   onSubmit,
@@ -19,8 +24,9 @@ export default function ExpandingInput({
 }) {
   const [content, setContent] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
-  const count = useSelector((state: RootState) => state.counter.value)
-  const dispatch = useDispatch()
+
+  // const count = useSelector((state: RootState) => state.counter.value)
+  // const dispatch = useDispatch<AppDispatch>() //mentioning AppDispatch is required if you are also dealing with async functions/actions
 
   const submit = (value: string) => {
     onSubmit?.(value, selectedFile)
@@ -86,14 +92,6 @@ export default function ExpandingInput({
           </button>
         )}
       </form>
-
-      <div className="">
-        <h2>{count}</h2>
-        <div>
-          <button onClick={() => dispatch(increment())}>Increment</button>
-          <button onClick={() => dispatch(decrement())}>Decrement</button>
-        </div>
-      </div>
     </div>
   )
 }
