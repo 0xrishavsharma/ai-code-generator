@@ -1,7 +1,7 @@
 import Image from "next/image"
 import React, { useEffect, useState } from "react"
 
-export default function ImageUploadComponent({
+export default function FileUploadComponent({
   selectedFile,
   setSelectedFile,
 }: {
@@ -9,25 +9,36 @@ export default function ImageUploadComponent({
   setSelectedFile: (file: File | undefined) => void
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
+  const [fileReaderError, setFileReaderError] = useState<boolean>(false)
+  const PREVIEW_IMAGE_SIZE = 128
 
   useEffect(() => {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl)
     }
     if (selectedFile) {
-      const url = URL.createObjectURL(selectedFile)
-      setPreviewUrl(url)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string)
+      }
+      reader.onerror = () => {
+        console.error("An error occurred while reading the file")
+        setFileReaderError(true)
+      }
+      reader.readAsDataURL(selectedFile)
+    } else {
+      setPreviewUrl(undefined)
     }
-
-    setPreviewUrl(undefined)
   }, [selectedFile])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFileReaderError(false)
     const file = e.target.files?.[0]
     setSelectedFile(file)
+    console.log("Selected file", selectedFile)
   }
 
-  const handleRemoveImage = () => {
+  const handleRemoveFile = () => {
     setSelectedFile(undefined)
   }
 
@@ -54,19 +65,25 @@ export default function ImageUploadComponent({
           accept="image/jpeg,image/png,image/webp,image/gif"
           onChange={handleFileChange}
         />
+        {fileReaderError && (
+          <div className="mt-2 text-red-500">
+            An error occurred while reading the file. Please try again.
+          </div>
+        )}
       </label>
+
       {previewUrl && (
         <div className="w-full p-2">
           <div className="relative w-max">
             <Image
               src={previewUrl}
-              alt="Selected"
+              alt="User selected file for upload"
               className="object-cover w-32 h-32"
-              width={128}
-              height={128}
+              width={PREVIEW_IMAGE_SIZE}
+              height={PREVIEW_IMAGE_SIZE}
             />
             <button
-              onClick={handleRemoveImage}
+              onClick={handleRemoveFile}
               type="button"
               className="absolute -top-3 -right-3 flex items-center justify-center px-1 py-1 w-7 h-7 rounded-full text-white bg-red-500 hover:bg-red-700"
             >
