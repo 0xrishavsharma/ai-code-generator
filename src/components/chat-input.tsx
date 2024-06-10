@@ -30,7 +30,9 @@ export default function ExpandingInput({
 
   const submit = (value: string) => {
     onSubmit?.(value, selectedFile)
+    onSubmit?.(value, selectedFile)
     setContent("")
+    setSelectedFile(undefined)
     setSelectedFile(undefined)
   }
   const handleSubmit = (e: React.FormEvent) => {
