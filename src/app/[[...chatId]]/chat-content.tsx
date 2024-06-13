@@ -18,8 +18,8 @@ export default function ChatContent() {
       file ? file : "",
     )
 
-    // // Uploading file to S3 bucket
-    // const signedUrlResult = await getSignedURL(file)
+    // Uploading file to S3 bucket
+    // const signedUrlResult = await getSignedURL()
     // const url = signedUrlResult.success?.url
     // if (signedUrlResult.failure !== undefined) {
     //   console.error("Error:", signedUrlResult.failure)
@@ -31,7 +31,7 @@ export default function ChatContent() {
       method: "POST",
       body: JSON.stringify({
         content: value,
-        file: file ? { url, type: file.type } : undefined,
+        // file: file ? { url, type: file.type } : undefined,
       }),
       headers: {
         "Content-Type": "application/json",
