@@ -6,6 +6,7 @@ import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { duotoneDark as dark } from "react-syntax-highlighter/dist/esm/styles/prism"
+import { getSignedUrl } from "../actions/GetSignedUrl"
 
 export default function ChatContent() {
   const [assistantResponse, setAssistantResponse] = useState("")
@@ -14,8 +15,12 @@ export default function ChatContent() {
       value ? "Question asked: " : "",
       file ? "File Uploaded: " : "",
       value,
-      file ? file : ""
+      file ? file : "",
     )
+
+    // const signedUrlResult = await getSignedUrl()
+    // console.log("Signed URL Result:", signedUrlResult)
+
     const res = await fetch("/api/message", {
       method: "POST",
       body: JSON.stringify({ content: value }),
@@ -47,7 +52,7 @@ export default function ChatContent() {
   }
   return (
     <>
-      <div className="max-w-4xl w-full mx-auto flex-1 px-10 py-5 overflow-x-hidden overflow-y-auto prose dark:prose-invert">
+      <div className="dark:prose-invert flex-1 w-full max-w-4xl px-10 py-5 mx-auto overflow-x-hidden overflow-y-auto prose">
         <Markdown
           remarkPlugins={[remarkGfm]}
           components={{
