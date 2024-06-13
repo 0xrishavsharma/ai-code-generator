@@ -27,14 +27,14 @@ const counterSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(incrementAsync.pending, () => {
-      console.log("incrementAsync.pending")
-      console.log(incrementAsync.pending)
+      // console.log("incrementAsync.pending")
+      // console.log(incrementAsync.pending)
     })
     builder.addCase(
       incrementAsync.fulfilled,
       (state, action: PayloadAction<number>) => {
         state.value += action.payload
-      }
+      },
     )
   },
 })
@@ -46,7 +46,7 @@ export const incrementAsync = createAsyncThunk(
     // Imitating an API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
     return amount
-  }
+  },
 )
 
 // exporting synchronous action and reducers

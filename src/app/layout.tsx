@@ -4,6 +4,7 @@ import "./globals.css"
 import { cn } from "@/lib/utils"
 import { store } from "@/state/store"
 import StoreProvider from "@/state/StoreProvider"
+import { SessionProvider } from "next-auth/react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,10 +23,12 @@ export default function RootLayout({
       <body
         className={cn(
           inter.className,
-          "h-screen bg-white dark:bg-black text-black dark:text-white"
+          "h-screen bg-white dark:bg-black text-black dark:text-white",
         )}
       >
-        <StoreProvider>{children}</StoreProvider>
+        <SessionProvider>
+          <StoreProvider>{children}</StoreProvider>
+        </SessionProvider>
       </body>
     </html>
   )

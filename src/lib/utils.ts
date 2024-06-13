@@ -15,7 +15,7 @@ export const convertFileToBase64 = (file: File): Promise<string> => {
 }
 
 export async function* makeStreamAsyncIterator(
-  reader: ReadableStreamDefaultReader<Uint8Array>
+  reader: ReadableStreamDefaultReader<Uint8Array>,
 ): AsyncGenerator<string, void, undefined> {
   const textDecoder = new TextDecoder()
   while (true) {

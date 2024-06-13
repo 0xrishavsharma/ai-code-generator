@@ -1,5 +1,6 @@
 import Image from "next/image"
 import React, { useEffect, useState } from "react"
+import { getSignedUrl } from "@/app/actions/GetSignedUrl"
 
 export default function FileUploadComponent({
   selectedFile,
@@ -31,10 +32,14 @@ export default function FileUploadComponent({
     }
   }, [selectedFile])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setFileReaderError(false)
     const file = e.target.files?.[0]
     setSelectedFile(file)
+
+    const signedUrlResult = await getSignedUrl()
+    console.log("Signed URL Result:", signedUrlResult)
+
     console.log("Selected file", selectedFile)
   }
 
@@ -43,10 +48,10 @@ export default function FileUploadComponent({
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <label className="flex absolute left-0 bottom-0 mx-7 mb-3">
+    <div className="container p-4 mx-auto">
+      <label className="mx-7 absolute bottom-0 left-0 flex mb-3">
         <svg
-          className="w-6 h-6 hover:cursor-pointer transform-gpu active:scale-75 transition-all text-neutral-500"
+          className="hover:cursor-pointer transform-gpu active:scale-75 text-neutral-500 w-6 h-6 transition-all"
           aria-label="Attach media"
           role="img"
           viewBox="0 0 20 20"
@@ -59,7 +64,7 @@ export default function FileUploadComponent({
         </svg>
 
         <input
-          className="bg-transparent flex-1 border-none outline-none hidden"
+          className="flex-1 hidden bg-transparent border-none outline-none"
           name="media"
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
@@ -74,7 +79,7 @@ export default function FileUploadComponent({
 
       {previewUrl && (
         <div className="w-full p-2">
-          <div className="relative w-max">
+          <div className="w-max relative">
             <Image
               src={previewUrl}
               alt="User selected file for upload"
@@ -85,7 +90,7 @@ export default function FileUploadComponent({
             <button
               onClick={handleRemoveFile}
               type="button"
-              className="absolute -top-3 -right-3 flex items-center justify-center px-1 py-1 w-7 h-7 rounded-full text-white bg-red-500 hover:bg-red-700"
+              className="-top-3 -right-3 w-7 h-7 hover:bg-red-700 absolute flex items-center justify-center px-1 py-1 text-white bg-red-500 rounded-full"
             >
               X
             </button>
