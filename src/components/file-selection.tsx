@@ -1,6 +1,6 @@
+import { getSignedURL } from "@/app/actions/GetSignedUrl"
 import Image from "next/image"
 import React, { useEffect, useState } from "react"
-import { getSignedUrl } from "@/app/actions/GetSignedUrl"
 
 export default function FileUploadComponent({
   selectedFile,
@@ -37,8 +37,14 @@ export default function FileUploadComponent({
     const file = e.target.files?.[0]
     setSelectedFile(file)
 
-    const signedUrlResult = await getSignedUrl()
-    console.log("Signed URL Result:", signedUrlResult)
+    // Uploading file to S3 bucket
+    const signedUrlResult = await getSignedURL()
+    const url = signedUrlResult.success?.url
+    if (signedUrlResult.failure !== undefined) {
+      console.error("Error:", signedUrlResult.failure)
+      return
+    }
+    console.log("Signed URL Result:", url)
 
     console.log("Selected file", selectedFile)
   }
