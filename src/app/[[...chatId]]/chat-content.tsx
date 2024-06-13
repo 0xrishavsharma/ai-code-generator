@@ -6,7 +6,7 @@ import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { duotoneDark as dark } from "react-syntax-highlighter/dist/esm/styles/prism"
-import { getSignedUrl } from "../actions/GetSignedUrl"
+import { getSignedURL } from "../actions/GetSignedUrl"
 
 export default function ChatContent() {
   const [assistantResponse, setAssistantResponse] = useState("")
@@ -18,12 +18,21 @@ export default function ChatContent() {
       file ? file : "",
     )
 
-    // const signedUrlResult = await getSignedUrl()
+    // // Uploading file to S3 bucket
+    // const signedUrlResult = await getSignedURL(file)
+    // const url = signedUrlResult.success?.url
+    // if (signedUrlResult.failure !== undefined) {
+    //   console.error("Error:", signedUrlResult.failure)
+    //   return
+    // }
     // console.log("Signed URL Result:", signedUrlResult)
 
     const res = await fetch("/api/message", {
       method: "POST",
-      body: JSON.stringify({ content: value }),
+      body: JSON.stringify({
+        content: value,
+        file: file ? { url, type: file.type } : undefined,
+      }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -34,6 +43,7 @@ export default function ChatContent() {
     }
     const reader = res.body.getReader()
 
+    // Streaming implementation
     // created this loop to read the stream until we get "true" in the done property
     const decoder = new TextDecoder()
     let finalText = ""

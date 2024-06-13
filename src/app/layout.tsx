@@ -9,7 +9,7 @@ import { SessionProvider } from "next-auth/react"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "CodeGenGPT",
+  title: "AI Code Generator",
   description: "Your AI coding assistant",
 }
 
