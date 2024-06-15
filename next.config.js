@@ -6,7 +6,13 @@ const nextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
         port: "",
-        pathname: "**", // This allows any path from the domain
+        pathname: "**", // Allows any path from the domain
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+        port: "",
+        pathname: "**",
       },
     ],
   },
