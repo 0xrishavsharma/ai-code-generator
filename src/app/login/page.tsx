@@ -12,7 +12,6 @@ const Login = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const { data: session } = useSession()
-  console.log("Session Data:", session)
 
   useEffect(() => {
     session && router.replace("/")
@@ -28,6 +27,8 @@ const Login = () => {
       dispatch(setUser(userData)) // Dispatch action to store user data
     }
   }, [session, dispatch])
+
+  console.log
 
   const handleSignIn = async (e: any, method: string) => {
     e.preventDefault()

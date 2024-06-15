@@ -4,9 +4,15 @@ import ChatContent from "./chat-content"
 import ChatList from "./chat-list"
 import Link from "next/link"
 import AuthButton from "./auth-button"
+import Image from "next/image"
+import { useState } from "react"
+import { IoSettingsOutline } from "react-icons/io5"
+import { IoIosLogOut } from "react-icons/io"
 
 export default function Page({ params }: { params: { chatId?: string[] } }) {
   const chatId = params.chatId?.[0]
+  const { data: session } = useSession()
+  const [isSettingModalOpen, setIsSettingModalOpen] = useState(false)
 
   return (
     <div className="flex w-full h-full">
@@ -14,8 +20,48 @@ export default function Page({ params }: { params: { chatId?: string[] } }) {
         <ChatList />
         <AuthButton />
       </div>
-      <div className="flex flex-col flex-1 h-full">
+      <div className="flex flex-col flex-1 h-full relative">
         <ChatContent />
+        <div className="">
+          <button className="absolute  items-center justify-center top-8 right-8 rounded-full bg-gray-300 shadow-2xl">
+            {session?.user?.image ? (
+              <Image
+                src={session.user.image}
+                onClick={() => setIsSettingModalOpen(!isSettingModalOpen)}
+                alt="User Avatar"
+                className="w-10 h-10 rounded-full"
+                width={50}
+                height={50}
+              />
+            ) : (
+              <Image
+                src="/img/default-avatar.png"
+                onClick={() => setIsSettingModalOpen(!isSettingModalOpen)}
+                alt="User Avatar"
+                className="w-10 h-10 rounded-full"
+                width={50}
+                height={50}
+              />
+            )}
+            {isSettingModalOpen && (
+              <div className="absolute flex flex-col top-10 right-4 bg-white dark:bg-neutral-600 text-gray-400  rounded-md shadow-lg text-sm w-36">
+                <button className="flex gap-4 items-center p-3 hover:bg-neutral-700 w-full rounded-md">
+                  <IoSettingsOutline className="" />
+                  Settings
+                </button>
+                {session?.user && (
+                  <button
+                    onClick={() => signOut()}
+                    className="flex gap-4 items-center p-3 hover:bg-neutral-700 w-full rounded-md"
+                  >
+                    <IoIosLogOut />
+                    Sign Out
+                  </button>
+                )}
+              </div>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )
