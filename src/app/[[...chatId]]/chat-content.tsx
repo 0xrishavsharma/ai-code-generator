@@ -18,14 +18,33 @@ export default function ChatContent() {
       file ? file : "",
     )
 
-    // Uploading file to S3 bucket
+    // // Uploading file to S3 bucket
+    // // if (file) {
+    // console.log("Uploading file to S3 bucket...")
     // const signedUrlResult = await getSignedURL()
     // const url = signedUrlResult.success?.url
-    // if (signedUrlResult.failure !== undefined) {
-    //   console.error("Error:", signedUrlResult.failure)
+    // if (signedUrlResult.failure !== undefined || !url) {
+    //   // Check if `url` is not defined
+    //   console.error("Error:", signedUrlResult.failure || "URL is undefined")
     //   return
     // }
     // console.log("Signed URL Result:", signedUrlResult)
+
+    // const fileUpload = await fetch(url, {
+    //   method: "PUT",
+    //   body: file,
+    //   headers: {
+    //     "Content-Type": file?.type || "application/octet-stream",
+    //   },
+    // })
+    // // }
+    // console.log(
+    //   "File upload response:",
+    //   fileUpload.status,
+    //   fileUpload.statusText,
+    //   await fileUpload.text(),
+    // )
+    // console.log("File uploaded successfully!")
 
     const res = await fetch("/api/message", {
       method: "POST",

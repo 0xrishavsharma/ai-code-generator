@@ -12,7 +12,7 @@ interface UserState {
   provider: string
   role: string
   token: string
-  expiresAt: Date
+  expiresAt: Date | string
 }
 
 const initialStateUser: UserState = {
@@ -25,7 +25,7 @@ const initialStateUser: UserState = {
   provider: "",
   role: "",
   token: "",
-  expiresAt: new Date(),
+  expiresAt: new Date().toISOString(),
 }
 
 const userSlice = createSlice({
@@ -33,8 +33,10 @@ const userSlice = createSlice({
   initialState: initialStateUser,
   reducers: {
     setUser: (state, action) => {
-      // Fields from Next.js session
-      state.expiresAt = action.payload.expiresAt || new Date()
+      // If expiresAt is not a Date object, convert it
+      if (!(state.expiresAt instanceof Date)) {
+        state.expiresAt = new Date(state.expiresAt)
+      }
       state.name = action.payload.name || ""
       state.email = action.payload.email || ""
       state.avatar = action.payload.image || ""
@@ -44,17 +46,12 @@ const userSlice = createSlice({
           : true // Assuming session presence means logged in
 
       // Fields for future custom login integration
-      // If the payload doesn't have these fields, keep the existing values (or set defaults if you prefer)
+      // If the payload doesn't have these fields, keep the existing values (or the default values from initialStateUser)
       state.id = action.payload.id || state.id
       state.username = action.payload.username || state.username
       state.provider = action.payload.provider || state.provider
       state.role = action.payload.role || state.role
       state.token = action.payload.token || state.token
-
-      // If expiresAt is not a Date object, convert it
-      if (!(state.expiresAt instanceof Date)) {
-        state.expiresAt = new Date(state.expiresAt)
-      }
     },
     clearUser: (state) => {
       state.id = ""

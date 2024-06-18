@@ -1,40 +1,37 @@
 "use client"
 import Link from "next/link"
-import { signIn, useSession } from "next-auth/react"
-import { FaGoogle } from "react-icons/fa"
-import { FaGithub } from "react-icons/fa"
+import { signIn } from "next-auth/react"
+import { FaGoogle, FaGithub } from "react-icons/fa"
 import { useDispatch } from "react-redux"
 import { useEffect } from "react"
 import { setUser } from "@/state/user/userSlice"
 import { useRouter } from "next/navigation"
+import useRequireAuth from "@/hooks/useRequireAuth"
 
 const Login = () => {
   const router = useRouter()
   const dispatch = useDispatch()
-  const { data: session } = useSession()
+  const { session, status } = useRequireAuth() // This will redirect unauthenticated users to "/login"
 
-  useEffect(() => {
-    session && router.replace("/")
-    if (session && session.user) {
-      const userData = {
-        id: session.user.id,
-        name: session.user.name,
-        isLoggedIn: true,
-        avatar: session.user.image,
-        email: session.user.email,
-        expiresAt: new Date(session.expires),
-      }
-      dispatch(setUser(userData)) // Dispatch action to store user data
-    }
-  }, [session, dispatch])
-
-  console.log
+  // useEffect(() => {
+  //   if (session && session.user) {
+  //     const userData = {
+  //       id: session.user.id,
+  //       name: session.user.name,
+  //       isLoggedIn: true,
+  //       avatar: session.user.image,
+  //       email: session.user.email,
+  //       expiresAt: new Date(session.expires),
+  //     }
+  //     dispatch(setUser(userData)) // Dispatch action to store user data
+  //   }
+  // }, [session, dispatch])
 
   const handleSignIn = async (e: any, method: string) => {
     e.preventDefault()
-    const res = await signIn(method, { callbackUrl: "/" })
-    console.log("Signin Response", res)
+    await signIn(method, { callbackUrl: "/" })
   }
+
   return (
     <div className="min-h-[100vh] flex flex-col items-center justify-center">
       <h1 className="mb-12 text-3xl font-bold">Login</h1>

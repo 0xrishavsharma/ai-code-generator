@@ -8,10 +8,11 @@ import Image from "next/image"
 import { useState } from "react"
 import { IoSettingsOutline } from "react-icons/io5"
 import { IoIosLogOut } from "react-icons/io"
+import useRequireAuth from "@/hooks/useRequireAuth"
 
 export default function Page({ params }: { params: { chatId?: string[] } }) {
   const chatId = params.chatId?.[0]
-  const { data: session } = useSession()
+  const { session, status } = useRequireAuth()
   const [isSettingModalOpen, setIsSettingModalOpen] = useState(false)
 
   return (
@@ -45,10 +46,6 @@ export default function Page({ params }: { params: { chatId?: string[] } }) {
             )}
             {isSettingModalOpen && (
               <div className="absolute flex flex-col top-10 right-4 bg-white dark:bg-neutral-600 text-gray-400  rounded-md shadow-lg text-sm w-36">
-                <button className="flex gap-4 items-center p-3 hover:bg-neutral-700 w-full rounded-md">
-                  <IoSettingsOutline className="" />
-                  Settings
-                </button>
                 {session?.user && (
                   <button
                     onClick={() => signOut()}
