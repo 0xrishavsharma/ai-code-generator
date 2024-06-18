@@ -38,15 +38,43 @@ export default function FileUploadComponent({
     setSelectedFile(file)
 
     // Uploading file to S3 bucket
-    const signedUrlResult = await getSignedURL()
-    const url = signedUrlResult.success?.url
-    if (signedUrlResult.failure !== undefined) {
-      console.error("Error:", signedUrlResult.failure)
-      return
-    }
-    console.log("Signed URL Result:", url)
+    if (file) {
+      console.log("Uploading file to S3 bucket...")
+      const fileInfo = {
+        name: file.name,
+        type: file.type,
+      }
+      const signedUrlResult = await getSignedURL(fileInfo)
+      const url = signedUrlResult.success?.url
+      if (signedUrlResult.failure !== undefined || !url) {
+        // Check if `url` is not defined
+        console.error("Error:", signedUrlResult.failure || "URL is undefined")
+        return
+      }
+      console.log("Signed URL Result:", signedUrlResult)
 
-    console.log("Selected file", selectedFile)
+      try {
+        const fileUpload = await fetch(url, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        })
+        if (!fileUpload.ok)
+          throw new Error(`HTTP error! status: ${fileUpload.status}`)
+        console.log(
+          "File upload response:",
+          fileUpload.status,
+          fileUpload.statusText,
+          await fileUpload.text(),
+        )
+        console.log("File uploaded successfully!")
+      } catch (error) {
+        console.error("File upload failed:", error)
+      }
+    }
+    console.log("File uploaded successfully!")
   }
 
   const handleRemoveFile = () => {

@@ -21,6 +21,13 @@ const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
   reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+        ignoredPaths: ["register", "rehydrate"],
+      },
+    }),
 })
 
 // we have configured our store now we need to connect it with our React/Next application. As React can't directly talk to Redux we need to create a Provider to bridge this gap
