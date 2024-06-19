@@ -36,45 +36,6 @@ export default function FileUploadComponent({
     setFileReaderError(false)
     const file = e.target.files?.[0]
     setSelectedFile(file)
-
-    // Uploading file to S3 bucket
-    if (file) {
-      console.log("Uploading file to S3 bucket...")
-      const fileInfo = {
-        name: file.name,
-        type: file.type,
-      }
-      const signedUrlResult = await getSignedURL(fileInfo)
-      const url = signedUrlResult.success?.url
-      if (signedUrlResult.failure !== undefined || !url) {
-        // Check if `url` is not defined
-        console.error("Error:", signedUrlResult.failure || "URL is undefined")
-        return
-      }
-      console.log("Signed URL Result:", signedUrlResult)
-
-      try {
-        const fileUpload = await fetch(url, {
-          method: "PUT",
-          body: file,
-          headers: {
-            "Content-Type": file.type,
-          },
-        })
-        if (!fileUpload.ok)
-          throw new Error(`HTTP error! status: ${fileUpload.status}`)
-        console.log(
-          "File upload response:",
-          fileUpload.status,
-          fileUpload.statusText,
-          await fileUpload.text(),
-        )
-        console.log("File uploaded successfully!")
-      } catch (error) {
-        console.error("File upload failed:", error)
-      }
-    }
-    console.log("File uploaded successfully!")
   }
 
   const handleRemoveFile = () => {
@@ -85,7 +46,7 @@ export default function FileUploadComponent({
     <div className="container p-4 mx-auto">
       <label className="mx-7 absolute bottom-0 left-0 flex mb-3">
         <svg
-          className="hover:cursor-pointer transform-gpu active:scale-75 text-neutral-500 w-6 h-6 transition-all"
+          className="hover:cursor-pointer transform-gpu active:scale-75 text-neutral-500 max-w-10 max-h-10 w-6 h-6 transition-all"
           aria-label="Attach media"
           role="img"
           viewBox="0 0 20 20"

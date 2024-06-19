@@ -1,6 +1,7 @@
 import OpenAI from "openai"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import { initialProgrammerMessages } from "./messages"
+// import {createOpenAI} from "@ai-sdk/openai"
 
 // If we want to deploy this Application to Vercel, then we need to make this route an EDGE FUNCTION so that we can stream the response to the client and if we don't do that, the response will be buffered and sent to the client only after the response is fully ready.
 
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
   // Take the content and send it to OPENAI's GTP4 Vision model
   const chatCompletion = await openai.chat.completions.create({
     messages: [...initialProgrammerMessages, { role: "user", content }],
-    model: "gpt-4-turbo-preview",
+    model: "gpt-4-turbo",
     stream: true,
   })
 
