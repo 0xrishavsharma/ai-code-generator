@@ -1,7 +1,6 @@
 import { getSignedURL } from "@/app/actions/GetSignedUrl"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import env from "./env"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -29,7 +28,7 @@ export async function* makeStreamAsyncIterator(
 }
 
 export function generateRandomString(bytes: number) {
-  if (env.NEXT_RUNTIME === "nodejs") {
+  if (process.env.NEXT_RUNTIME === "nodejs") {
     //we are primarily using this function in the server actions so this code will work
     const crypto = require("crypto")
     return crypto.randomBytes(bytes).toString("hex")

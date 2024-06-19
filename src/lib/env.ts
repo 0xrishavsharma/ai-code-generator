@@ -1,8 +1,6 @@
 import { cleanEnv, port, str } from "envalid"
 
 const env = cleanEnv(process.env, {
-  PORT: port(),
-  NEXT_RUNTIME: str(),
   NEXT_PUBLIC_GITHUB_CLIENT_ID: str(),
   NEXT_PUBLIC_GITHUB_CLIENT_SECRET: str(),
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: str(),
@@ -17,6 +15,8 @@ const env = cleanEnv(process.env, {
   AWS_S3_BUCKET_REGION_LOCAL: str(),
   AWS_S3_BUCKET_ACCESS_KEY_LOCAL: str(),
   AWS_S3_BUCKET_SECRET_ACCESS_KEY_LOCAL: str(),
+
+  // OpenAI API Key
   OPENAI_API_KEY_LOCAL: str(),
 
   // Turso Database Configuration
