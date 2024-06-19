@@ -1,4 +1,5 @@
 import { getSignedURL } from "@/app/actions/GetSignedUrl"
+import { computeSHA256 } from "@/lib/utils"
 import Image from "next/image"
 import React, { useEffect, useState } from "react"
 
@@ -11,6 +12,7 @@ export default function FileUploadComponent({
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
   const [fileReaderError, setFileReaderError] = useState<boolean>(false)
+  const fileInputRef = React.createRef<HTMLInputElement>()
   const PREVIEW_IMAGE_SIZE = 128
 
   useEffect(() => {
@@ -30,16 +32,58 @@ export default function FileUploadComponent({
     } else {
       setPreviewUrl(undefined)
     }
-  }, [selectedFile])
+  }, [selectedFile, previewUrl])
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setFileReaderError(false)
     const file = e.target.files?.[0]
     setSelectedFile(file)
+
+    // Uploading file to S3 bucket
+    if (file) {
+      console.log("Uploading file to S3 bucket...")
+      const fileInfo = {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        checksum: await computeSHA256(file),
+      }
+      const signedUrlResult = await getSignedURL(fileInfo)
+      const url = signedUrlResult.success?.url
+      if (signedUrlResult.failure !== undefined || !url) {
+        // Check if `url` is not defined
+        console.error("Error:", signedUrlResult.failure || "URL is undefined")
+        return
+      }
+      console.log("Signed URL Result:", signedUrlResult)
+
+      try {
+        const fileUpload = await fetch(url, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        })
+        if (!fileUpload.ok)
+          throw new Error(`HTTP error! status: ${fileUpload.status}`)
+        console.log(
+          "File upload response:",
+          fileUpload.status,
+          fileUpload.statusText,
+          await fileUpload.text(),
+        )
+        console.log("File uploaded successfully!")
+      } catch (error) {
+        console.error("File upload failed:", error)
+      }
+      console.log("File uploaded successfully!")
+    }
   }
 
   const handleRemoveFile = () => {
     setSelectedFile(undefined)
+    if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
   return (
@@ -59,6 +103,7 @@ export default function FileUploadComponent({
         </svg>
 
         <input
+          ref={fileInputRef}
           className="flex-1 hidden bg-transparent border-none outline-none"
           name="media"
           type="file"

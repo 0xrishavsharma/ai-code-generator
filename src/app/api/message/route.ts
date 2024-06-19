@@ -1,6 +1,7 @@
 import OpenAI from "openai"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import { initialProgrammerMessages } from "./messages"
+import env from "@/lib/env"
 // import {createOpenAI} from "@ai-sdk/openai"
 
 // If we want to deploy this Application to Vercel, then we need to make this route an EDGE FUNCTION so that we can stream the response to the client and if we don't do that, the response will be buffered and sent to the client only after the response is fully ready.
@@ -9,7 +10,7 @@ import { initialProgrammerMessages } from "./messages"
 export const runtime = "edge"
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: env.OPENAI_API_KEY_LOCAL,
 })
 export async function POST(req: Request) {
   const { content } = await req.json()
