@@ -24,7 +24,7 @@ export default function Page({ params }: { params: { chatId?: string[] } }) {
       <div className="flex flex-col flex-1 h-full relative">
         <ChatContent />
         <div className="">
-          <button className="absolute  items-center justify-center top-8 right-8 rounded-full bg-gray-300 shadow-2xl">
+          <div className="absolute  items-center justify-center top-8 right-8 rounded-full bg-gray-300 shadow-2xl cursor-pointer">
             {session?.user?.image ? (
               <Image
                 src={session.user.image}
@@ -57,7 +57,7 @@ export default function Page({ params }: { params: { chatId?: string[] } }) {
                 )}
               </div>
             )}
-          </button>
+          </div>
         </div>
       </div>
     </div>
