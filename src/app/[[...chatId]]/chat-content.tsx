@@ -7,93 +7,84 @@ import remarkGfm from "remark-gfm"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { duotoneDark as dark } from "react-syntax-highlighter/dist/esm/styles/prism"
 import { getSignedURL } from "../actions/GetSignedUrl"
+import { computeSHA256 } from "@/lib/utils"
+
+async function uploadFile(file: File) {
+  const fileInfo = {
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    checksum: await computeSHA256(file),
+  }
+  const signedUrlResult = await getSignedURL(fileInfo)
+  const url = signedUrlResult.success?.url
+  if (signedUrlResult.failure !== undefined || !url) {
+    throw new Error(signedUrlResult.failure || "URL is undefined")
+  }
+
+  const fileUpload = await fetch(url, {
+    method: "PUT",
+    body: file,
+    headers: {
+      "Content-Type": file.type,
+    },
+  })
+  if (!fileUpload.ok)
+    throw new Error(`HTTP error! status: ${fileUpload.status}`)
+
+  return url // Return the URL of the uploaded file
+}
+
+async function postMessage(
+  content: string,
+  fileUrl: string | null | undefined,
+  fileType: File | string | undefined,
+) {
+  const res = await fetch("/api/message", {
+    method: "POST",
+    body: JSON.stringify({
+      content,
+      file: fileUrl
+        ? {
+            url: fileUrl,
+            type: fileType instanceof File ? fileType : undefined,
+          }
+        : undefined,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  if (!res.ok || !res.body) {
+    throw new Error(`Error: ${res.status} ${res.statusText}`)
+  }
+  return res.body.getReader() // Return the reader for the response body
+}
+
+async function readStream(
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  setAssistantResponse: Function,
+) {
+  const decoder = new TextDecoder()
+  while (true) {
+    const { done, value } = await reader.read()
+    const decodedText = decoder.decode(value, { stream: !done })
+    setAssistantResponse((prev: string) => prev + decodedText)
+    if (done) break
+  }
+}
 
 export default function ChatContent() {
   const [assistantResponse, setAssistantResponse] = useState("")
+
   const handleSubmit = async (value: string, file?: File) => {
-    console.log(
-      value ? "Question asked: " : "",
-      file ? "File Uploaded: " : "",
-      value,
-      file ? file : "",
-    )
-
-    // Uploading file to S3 bucket
     try {
+      let fileUrl = null
       if (file) {
-        console.log("Uploading file to S3 bucket...")
-        const fileInfo = {
-          name: file.name,
-          type: file.type,
-          size: file.size,
-        }
-        const signedUrlResult = await getSignedURL(fileInfo)
-        const url = signedUrlResult.success?.url
-        if (signedUrlResult.failure !== undefined || !url) {
-          // Check if `url` is not defined
-          console.error("Error:", signedUrlResult.failure || "URL is undefined")
-          return
-        }
-        console.log("Signed URL Result:", signedUrlResult)
-
-        try {
-          const fileUpload = await fetch(url, {
-            method: "PUT",
-            body: file,
-            headers: {
-              "Content-Type": file.type,
-            },
-          })
-          if (!fileUpload.ok)
-            throw new Error(`HTTP error! status: ${fileUpload.status}`)
-          console.log(
-            "File upload response:",
-            fileUpload.status,
-            fileUpload.statusText,
-            await fileUpload.text(),
-          )
-          console.log("File uploaded successfully!")
-        } catch (error) {
-          console.error("File upload failed:", error)
-        }
-        console.log("File uploaded successfully!")
-
-        const res = await fetch("/api/message", {
-          method: "POST",
-          body: JSON.stringify({
-            content: value,
-            file: file ? { url, type: file.type } : undefined,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        if (!res.ok || !res.body) {
-          console.error("Error:", res.status, res.statusText, await res.text())
-          return
-        }
-
-        const reader = res.body.getReader()
-
-        // Streaming implementation
-        // created this loop to read the stream until we get "true" in the done property
-        const decoder = new TextDecoder()
-        let finalText = ""
-
-        while (true) {
-          const { done, value } = await reader.read()
-
-          // Since the value we'll get while reading the steam is in binary, we need to convert it into text
-          const decodedText = decoder.decode(value, { stream: !done })
-          setAssistantResponse(
-            (prevStreamedRes) => prevStreamedRes + decodedText,
-          )
-
-          if (done) {
-            break
-          }
-        }
+        // fileUrl = await uploadFile(file)
       }
+      // const reader = await postMessage(value, fileUrl, file?.type)
+      // await readStream(reader, setAssistantResponse)
     } catch (error) {
       console.error("Error:", error)
     }
