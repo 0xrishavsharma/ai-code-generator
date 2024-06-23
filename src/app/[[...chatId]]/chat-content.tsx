@@ -1,14 +1,26 @@
 "use client"
 
 import ChatInput from "@/components/chat-input"
-import { useState } from "react"
+import { use, useRef, useState } from "react"
 import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { duotoneDark as dark } from "react-syntax-highlighter/dist/esm/styles/prism"
 import { getSignedURL } from "../actions/GetSignedUrl"
 import { computeSHA256 } from "@/lib/utils"
+import { CoreMessage } from "ai"
+import { readStreamableValue } from "ai/rsc"
+import { useCompletion } from "ai/react"
 
+interface ExpandingInputRef {
+  resetInput: () => void
+}
+
+// Force the page to be dynamic and allow streaming responses upto 30sec
+export const dynamic = "force-dynamic"
+export const maxDuration = 30
+
+// Upload the file to the server
 async function uploadFile(file: File) {
   const fileInfo = {
     name: file.name,
@@ -35,10 +47,11 @@ async function uploadFile(file: File) {
   return url // Return the URL of the uploaded file
 }
 
+// Post the message to the server
 async function postMessage(
-  content: string,
-  fileUrl: string | null | undefined,
-  fileType: File | string | undefined,
+  content: string | CoreMessage[],
+  fileUrl?: string | null | undefined,
+  fileType?: File | string | undefined,
 ) {
   const res = await fetch("/api/message", {
     method: "POST",
@@ -66,29 +79,42 @@ async function readStream(
   setAssistantResponse: Function,
 ) {
   const decoder = new TextDecoder()
+  let result = ""
   while (true) {
-    const { done, value } = await reader.read()
+    const { value, done } = await reader.read()
     const decodedText = decoder.decode(value, { stream: !done })
-    setAssistantResponse((prev: string) => prev + decodedText)
+    setAssistantResponse((prev: any) => prev + decodedText)
     if (done) break
   }
 }
 
 export default function ChatContent() {
   const [assistantResponse, setAssistantResponse] = useState("")
+  const inputRef = useRef<ExpandingInputRef>(null)
+
+  const { completion, complete } = useCompletion({
+    api: "/api/message",
+  })
 
   const handleSubmit = async (value: string, file?: File) => {
     try {
       let fileUrl = null
-      if (file) {
-        // fileUrl = await uploadFile(file)
-      }
-      // const reader = await postMessage(value, fileUrl, file?.type)
-      // await readStream(reader, setAssistantResponse)
+      // if (file) {
+      //   fileUrl = await uploadFile(file)
+      // }
+      const result = await complete(value)
+      console.log("result from chat-content", result)
+
+      // Reset the input field after successful submission and getting an error free response
+      // if (inputRef.current !== null) {
+      //   inputRef.current.resetInput()
+      // }
     } catch (error) {
       console.error("Error:", error)
     }
   }
+
+  console.log("completion hai yeh: ", completion)
 
   return (
     <>
@@ -117,10 +143,11 @@ export default function ChatContent() {
             },
           }}
         >
-          {assistantResponse}
+          {/* {assistantResponse} */}
+          {completion}
         </Markdown>
       </div>
-      <ChatInput onSubmit={handleSubmit} />
+      <ChatInput onSubmit={handleSubmit} ref={inputRef} />
     </>
   )
 }

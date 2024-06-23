@@ -1,6 +1,10 @@
 import { cleanEnv, port, str } from "envalid"
 
 const env = cleanEnv(process.env, {
+  // OpenAI Creds
+  OPENAI_API_KEY: str(),
+
+  // Auth Provider Creds
   NEXT_PUBLIC_GITHUB_CLIENT_ID: str(),
   NEXT_PUBLIC_GITHUB_CLIENT_SECRET: str(),
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: str(),
@@ -16,8 +20,9 @@ const env = cleanEnv(process.env, {
   AWS_S3_BUCKET_ACCESS_KEY_LOCAL: str(),
   AWS_S3_BUCKET_SECRET_ACCESS_KEY_LOCAL: str(),
 
-  // OpenAI API Key
-  OPENAI_API_KEY_LOCAL: str(),
+  // MongoDB Configuration
+  MONGODB_CONNECTION_PASSWORD_LOCAL: str(),
+  MONGODB_CONNECTION_USERNAME_LOCAL: str(),
 
   // Turso Database Configuration
   TURSO_URL: str(),

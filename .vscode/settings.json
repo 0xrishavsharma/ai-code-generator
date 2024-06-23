@@ -1,3 +1,11 @@
 {
-  "cSpell.words": ["envalid", "NEXTAUTH", "persistor", "presigner", "Turso"]
+  "cSpell.words": [
+    "Creds",
+    "envalid",
+    "NEXTAUTH",
+    "persistor",
+    "presigner",
+    "Streamable",
+    "Turso"
+  ]
 }
