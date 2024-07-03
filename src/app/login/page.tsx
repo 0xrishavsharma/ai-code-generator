@@ -1,18 +1,8 @@
 "use client"
-import Link from "next/link"
 import { signIn } from "next-auth/react"
 import { FaGoogle, FaGithub } from "react-icons/fa"
-import { useDispatch } from "react-redux"
-import { useEffect } from "react"
-import { setUser } from "@/state/user/userSlice"
-import { useRouter } from "next/navigation"
-import useRequireAuth from "@/hooks/useRequireAuth"
 
 const Login = () => {
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const { session, status } = useRequireAuth() // This will redirect unauthenticated users to "/login"
-
   // useEffect(() => {
   //   if (session && session.user) {
   //     const userData = {

@@ -1,3 +1,4 @@
+import useRequireAuth from "@/hooks/useRequireAuth"
 import { signOut, useSession } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
@@ -5,7 +6,7 @@ import { IoIosLogOut } from "react-icons/io"
 
 type Props = {}
 const AuthButton = (props: Props) => {
-  const { data: session } = useSession()
+  const { session } = useRequireAuth()
   return (
     <div className="">
       <div className="flex flex-col justify-center truncate">
