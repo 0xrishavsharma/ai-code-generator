@@ -1,7 +1,8 @@
 import env from "@/lib/env"
-import { defineConfig } from "drizzle-kit"
+import { Config, defineConfig } from "drizzle-kit"
 
-export default defineConfig({
+export default {
+  dialect: "sqlite",
   schema: "./src/db/schema/*",
   driver: "turso",
   dbCredentials: {
@@ -9,4 +10,4 @@ export default defineConfig({
     authToken: env.TURSO_AUTH_TOKEN,
   },
   out: "./drizzle",
-})
+} satisfies Config
